@@ -23,6 +23,11 @@ pub struct MechanismType {
 }
 
 impl MechanismType {
+    // AES
+    /// AES key generation mechanism
+    pub const AES_KEY_GEN: MechanismType = MechanismType {
+        val: CKM_AES_KEY_GEN,
+    };
     // RSA
     /// PKCS #1 RSA key pair generation mechanism
     pub const RSA_PKCS_KEY_PAIR_GEN: MechanismType = MechanismType {
@@ -125,6 +130,9 @@ impl TryFrom<CK_MECHANISM_TYPE> for MechanismType {
 #[non_exhaustive]
 /// Type defining a specific mechanism and its parameters
 pub enum Mechanism {
+    // AES
+    /// AES key generation mechanism
+    AesKeyGen,
     // RSA
     /// PKCS #1 RSA key pair generation mechanism
     RsaPkcsKeyPairGen,
@@ -169,6 +177,7 @@ impl Mechanism {
     /// Get the type of a mechanism
     pub fn mechanism_type(&self) -> MechanismType {
         match self {
+            Mechanism::AesKeyGen => MechanismType::AES_KEY_GEN,
             Mechanism::RsaPkcsKeyPairGen => MechanismType::RSA_PKCS_KEY_PAIR_GEN,
             Mechanism::RsaPkcs => MechanismType::RSA_PKCS,
             Mechanism::RsaPkcsPss(_) => MechanismType::RSA_PKCS_PSS,
@@ -216,7 +225,8 @@ impl From<&Mechanism> for CK_MECHANISM {
                     .expect("usize can not fit in CK_ULONG"),
             },
             // Mechanisms without parameters
-            Mechanism::RsaPkcsKeyPairGen
+            Mechanism::AesKeyGen
+            | Mechanism::RsaPkcsKeyPairGen
             | Mechanism::RsaPkcs
             | Mechanism::Sha1
             | Mechanism::Sha256

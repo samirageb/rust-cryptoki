@@ -518,6 +518,8 @@ impl KeyType {
     pub const RSA: KeyType = KeyType { val: CKK_RSA };
     /// EC key
     pub const EC: KeyType = KeyType { val: CKK_EC };
+    /// AES key
+    pub const AES: KeyType = KeyType { val: CKK_AES };
     /// Generic secret
     pub const GENERIC_SECRET: KeyType = KeyType {
         val: CKK_GENERIC_SECRET,

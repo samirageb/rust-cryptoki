@@ -46,6 +46,30 @@ impl<'a> Session<'a> {
         ))
     }
 
+    /// Generate a secret/generic key
+    pub fn generate_key(
+        &self,
+        mechanism: &Mechanism,
+        key_template: &[Attribute],
+    ) -> Result<ObjectHandle> {
+        let mut mechanism: CK_MECHANISM = mechanism.into();
+        let mut key_template: Vec<CK_ATTRIBUTE> =
+            key_template.iter().map(|attr| attr.into()).collect();
+        let mut handle = 0;
+        unsafe {
+            Rv::from(get_pkcs11!(self.client(), C_GenerateKey)(
+                self.handle(),
+                &mut mechanism as CK_MECHANISM_PTR,
+                key_template.as_mut_ptr(),
+                key_template.len().try_into()?,
+                &mut handle,
+            ))
+            .into_result()?;
+        }
+
+        Ok(ObjectHandle::new(handle))
+    }
+
     /// Derives a key from a base key
     pub fn derive_key(
         &self,
